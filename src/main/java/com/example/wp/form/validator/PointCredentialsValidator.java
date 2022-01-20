@@ -14,9 +14,7 @@ import javax.validation.constraints.NotNull;
 
 @Component
 public class PointCredentialsValidator implements Validator {
-    private final PointService pointService;
     public PointCredentialsValidator(PointService pointService) {
-        this.pointService = pointService;
     }
 
     @NotEmpty
@@ -33,9 +31,9 @@ public class PointCredentialsValidator implements Validator {
         if(!errors.hasErrors()){
             PointsCredentials pointsCredentials = (PointsCredentials) o;
             try {
-                Double x = Double.parseDouble(pointsCredentials.getX());
-                Double y = Double.parseDouble(pointsCredentials.getY());
-                Double r = Double.parseDouble(pointsCredentials.getR());
+                double x = Double.parseDouble(pointsCredentials.getX());
+                double y = Double.parseDouble(pointsCredentials.getY());
+                double r = Double.parseDouble(pointsCredentials.getR());
                 if(x > 4 || x < -4) throw new ValidationException("x is out of range!");
                 if(y < -2 || y > 2) throw new ValidationException("y is out of range!");
                 if(!(r == 1 || r == 1.5 || r == 2 || r == 2.5 || r == 3)){

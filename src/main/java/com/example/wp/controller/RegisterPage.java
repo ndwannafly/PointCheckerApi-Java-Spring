@@ -73,11 +73,14 @@ public class RegisterPage {
     }
     @PostMapping("/register")
     public ResponseEntity post(@Valid @ModelAttribute("registerform")UserCredentials credentials, BindingResult bindingResult){
+        System.out.println("registering....!");
         if(bindingResult.hasErrors()){
+            System.out.println("login yzhe zanyat");
             Map<String, Object> resp = new HashMap<>();
             resp.put("error", "Логин уже занят");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resp);
         }
+        System.out.println("here");
         Map<String, Object> resp = new HashMap<>();
         resp.put("login", credentials.getLogin());
         resp.put("password", credentials.getPassword());
@@ -87,6 +90,23 @@ public class RegisterPage {
 
     @PostMapping("/login")
     public ResponseEntity login(@ModelAttribute("registerform")UserCredentials credentials, BindingResult bindingResult){
+        if(bindingResult.hasErrors() || !userService.findByLoginAndPassword(credentials.getLogin(), userService.NoHack(credentials.getPassword()))){
+            Map<String, Object> resp = new HashMap<>();
+            resp.put("error", "Ошибка в авторизации");
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(resp);
+        }
+        if(userService.findByLoginAndPassword(credentials.getLogin(), userService.NoHack(credentials.getPassword()))) {
+            Map<String, Object> resp = new HashMap<>();
+            resp.put("login", credentials.getLogin());
+            resp.put("password", credentials.getPassword());
+
+            return ResponseEntity.ok(resp);
+        }
+        return null;
+    }
+
+    @PostMapping("/me")
+    public ResponseEntity checkMe(@ModelAttribute("registerform")UserCredentials credentials, BindingResult bindingResult){
         if(bindingResult.hasErrors() || !userService.findByLoginAndPassword(credentials.getLogin(), userService.NoHack(credentials.getPassword()))){
             Map<String, Object> resp = new HashMap<>();
             resp.put("error", "Ошибка в авторизации");

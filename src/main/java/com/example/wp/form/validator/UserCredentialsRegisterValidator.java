@@ -29,6 +29,7 @@ public class UserCredentialsRegisterValidator implements Validator {
     public void validate(Object o, Errors errors) {
         if(!errors.hasErrors()){
             UserCredentials userCredentials = (UserCredentials) o;
+            System.out.println("in validate: " + userCredentials.getLogin());
             if(!userService.isLoginVacant(userCredentials.getLogin())){
                 errors.rejectValue("login", "login.login-in-use", "In use");
             }

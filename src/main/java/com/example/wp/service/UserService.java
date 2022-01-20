@@ -18,11 +18,15 @@ public class UserService {
     }
 
     public boolean isLoginVacant(String login){
+        System.out.println("check login is already used!");
         return userRepository.countUserByLogin(login) == 0;
     }
 
     public User register(UserCredentials userCredentials){
         User user = new User();
+        System.out.println("registering user: ...\n");
+        System.out.println(userCredentials.getLogin());
+        System.out.println(userCredentials.getPassword());
         user.setLogin(userCredentials.getLogin());
         user.setPassword(NoHack(userCredentials.getPassword()));
         userRepository.save(user);

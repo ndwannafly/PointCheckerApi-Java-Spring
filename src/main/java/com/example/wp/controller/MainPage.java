@@ -4,14 +4,13 @@ import com.example.wp.domain.Point;
 import com.example.wp.form.PointsCredentials;
 import com.example.wp.form.UserCredentials;
 import com.example.wp.form.validator.PointCredentialsValidator;
-import com.example.wp.mbeans.PercentageCounter;
 import com.example.wp.mbeans.PercentageCounterMBean;
 import com.example.wp.mbeans.PointsCounterMBean;
 import com.example.wp.repository.UserRepository;
 import com.example.wp.service.PointService;
+import com.example.wp.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
@@ -23,15 +22,17 @@ import java.util.Map;
 import java.util.StringJoiner;
 
 @CrossOrigin
-@Controller
+@RestController
 public class MainPage {
+    private final UserService userService;
     private final PointService pointService;
     private final PointCredentialsValidator pointCredentialsValidator;
     private final UserRepository userRepository;
     private final PointsCounterMBean pointsCounterMBean;
     private final PercentageCounterMBean percentageCounterMBean;
 
-    public MainPage(PointService pointService, PointCredentialsValidator pointCredentialsValidator, UserRepository userRepository, PointsCounterMBean pointsCounterMBean, PercentageCounterMBean percentageCounterMBean) {
+    public MainPage(UserService userService, PointService pointService, PointCredentialsValidator pointCredentialsValidator, UserRepository userRepository, PointsCounterMBean pointsCounterMBean, PercentageCounterMBean percentageCounterMBean) {
+        this.userService = userService;
         this.pointService = pointService;
         this.pointCredentialsValidator = pointCredentialsValidator;
         this.userRepository = userRepository;

@@ -7,7 +7,7 @@ import javax.validation.constraints.Pattern;
 public class UserCredentials {
     @NotNull
     @NotEmpty
-    @Pattern(regexp = "[a-z]+", message = "Wrong login")
+    @Pattern(regexp = "[a-zA-Z0-9]+", message = "Wrong login")
     private String login;
     @NotEmpty
     @NotNull
