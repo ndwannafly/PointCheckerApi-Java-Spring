@@ -41,19 +41,17 @@ public class RegisterPage {
     public void initBinder(WebDataBinder webDataBinder){
         webDataBinder.addValidators(userCredentialsRegisterValidator);
     }
-
     @GetMapping("/register")
-    public String get(Model model){
-        //model.addAttribute("registerform", new UserCredentials());
-        return "registerPage";
-    }
+    public void handle(){};
+
     @PostMapping("/all")
-    public ResponseEntity getAll( @ModelAttribute("registerform")UserCredentials credentials, BindingResult bindingResult){
+    public ResponseEntity getAll( @RequestBody UserCredentials credentials, BindingResult bindingResult){
         System.out.println("fetching all...!");
         if(bindingResult.hasErrors()){
             System.out.println("error");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("error");
         }
+        System.out.println(credentials.getLogin());
         List<Point> points = pointService.getAllPointsByUser(userRepository.getUserByLogin(credentials.getLogin()));
         StringJoiner joiner = new StringJoiner(",");
         for(Point point1 : points){
@@ -69,10 +67,11 @@ public class RegisterPage {
             builder.append("\"}");
             joiner.add(builder.toString());
         }
+        //System.out.println("[" + joiner.toString() + "]");
         return ResponseEntity.ok("[" + joiner.toString() + "]");
     }
     @PostMapping("/register")
-    public ResponseEntity post(@Valid @ModelAttribute("registerform")UserCredentials credentials, BindingResult bindingResult){
+    public ResponseEntity post(@Valid @RequestBody  UserCredentials credentials, BindingResult bindingResult){
         System.out.println("registering....!");
         if(bindingResult.hasErrors()){
             System.out.println("login yzhe zanyat");
@@ -82,14 +81,18 @@ public class RegisterPage {
         }
         System.out.println("here");
         Map<String, Object> resp = new HashMap<>();
+        System.out.println(credentials.getLogin());
+        System.out.println("nohack: " + userService.NoHack(credentials.getPassword()));
         resp.put("login", credentials.getLogin());
-        resp.put("password", credentials.getPassword());
+        resp.put("password", userService.NoHack(credentials.getPassword()));
         userService.register(credentials);
         return ResponseEntity.ok(resp);
     }
 
     @PostMapping("/login")
-    public ResponseEntity login(@ModelAttribute("registerform")UserCredentials credentials, BindingResult bindingResult){
+    public ResponseEntity login(@RequestBody  UserCredentials credentials, BindingResult bindingResult){
+        /*System.out.println(credentials.getLogin());
+        System.out.println(credentials.getPassword());*/
         if(bindingResult.hasErrors() || !userService.findByLoginAndPassword(credentials.getLogin(), userService.NoHack(credentials.getPassword()))){
             Map<String, Object> resp = new HashMap<>();
             resp.put("error", "Ошибка в авторизации");
@@ -98,7 +101,7 @@ public class RegisterPage {
         if(userService.findByLoginAndPassword(credentials.getLogin(), userService.NoHack(credentials.getPassword()))) {
             Map<String, Object> resp = new HashMap<>();
             resp.put("login", credentials.getLogin());
-            resp.put("password", credentials.getPassword());
+            resp.put("password", userService.NoHack(credentials.getPassword()));
 
             return ResponseEntity.ok(resp);
         }
@@ -106,17 +109,17 @@ public class RegisterPage {
     }
 
     @PostMapping("/me")
-    public ResponseEntity checkMe(@ModelAttribute("registerform")UserCredentials credentials, BindingResult bindingResult){
-        if(bindingResult.hasErrors() || !userService.findByLoginAndPassword(credentials.getLogin(), userService.NoHack(credentials.getPassword()))){
+    public ResponseEntity checkMe(@RequestBody UserCredentials credentials, BindingResult bindingResult){
+        System.out.println("fetching me ....!");
+        System.out.println(credentials.getLogin());
+        System.out.println(credentials.getPassword());
+        if(bindingResult.hasErrors() || !userService.findByLoginAndPassword(credentials.getLogin(),credentials.getPassword())){
             Map<String, Object> resp = new HashMap<>();
             resp.put("error", "Ошибка в авторизации");
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(resp);
         }
-        if(userService.findByLoginAndPassword(credentials.getLogin(), userService.NoHack(credentials.getPassword()))) {
+        if(userService.findByLoginAndPassword(credentials.getLogin(), credentials.getPassword())) {
             Map<String, Object> resp = new HashMap<>();
-            resp.put("login", credentials.getLogin());
-            resp.put("password", credentials.getPassword());
-
             return ResponseEntity.ok(resp);
         }
         return null;

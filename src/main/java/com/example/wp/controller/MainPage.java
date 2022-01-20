@@ -58,7 +58,8 @@ public class MainPage {
 
 
     @PostMapping("/point")
-    public ResponseEntity setPoint(@Valid @ModelAttribute("checkForm") PointsCredentials point, BindingResult bindingResult) {
+    public ResponseEntity setPoint(@Valid @RequestBody PointsCredentials point, BindingResult bindingResult) {
+        System.out.println(point.getLogin());
         if (bindingResult.hasErrors()) {
             System.out.println("error");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("error");
@@ -74,6 +75,7 @@ public class MainPage {
             resp.put("error", "Вы удалены из жизни");
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(resp);
         }
+
         List<Point> points = pointService.getAllPointsByUser(userRepository.getUserByLogin(point.getLogin()));
         StringJoiner joiner = new StringJoiner(",");
         for (Point point1 : points) {
